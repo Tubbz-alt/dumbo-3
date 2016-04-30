@@ -43,12 +43,16 @@ def t_code_IDENTIFIER(t):
 		t.type = u
 	return t
 def t_code_STRING(t):
-	r"'([^']|\')+'"
+	r"'([^'\n]|\')+'"
 	t.value = t.value[1:-1].replace(r"\'", "'")
 	#TODO regex replace for at least unescaped \n and \t
 	return t
 def t_code_error(t):
-	print >>sys.stdout, "Illegal character:", t.value[0]
+	where = "at line "+str(t.lexer.lineno)
+	if t.value[0] == "'":
+		print >>sys.stdout, "Unterminated string literal", where
+	else:
+		print >>sys.stdout, "Illegal character", repr(t.value[0]), where
 	t.lexer.skip(1)
 
 lex = lex.lex()
