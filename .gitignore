@@ -1,3 +1,16 @@
+# Vim swap files
+*.swp
+
+# LaTeX-generated files
+*.aux
+*.log
+*.out
+*.pdf
+*.toc
+*.bbl
+*.bcf
+*.blg
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
