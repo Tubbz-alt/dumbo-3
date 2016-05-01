@@ -3,8 +3,10 @@ from ply import lex
 
 tokens = ['TEXT', 'BEGIN', 'END',
 	'STRING', 'IDENTIFIER', 'CONCAT', 'SEMICOLON', 'ASSIGN',
-	'EQUALS']
-keywords = ('PRINT', 'FOR', 'IN', 'DO', 'ENDFOR', 'IF', 'ENDIF', 'ELSE')
+	'LPAREN', 'RPAREN', 'COMMA',
+	'EQUALS', 'DIFFERENT']
+keywords = ('PRINT', 'FOR', 'IN', 'DO', 'ENDFOR',
+	'IF', 'ENDIF', 'ELSE', 'TRUE', 'FALSE')
 tokens.extend(keywords) #idea from http://stackoverflow.com/a/5028233
 states = (('code', 'exclusive'), )
 
@@ -36,6 +38,10 @@ t_code_CONCAT = r'\.'
 t_code_SEMICOLON = ';'
 t_code_ASSIGN = ':='
 t_code_EQUALS = '='
+t_code_DIFFERENT = '!='
+t_code_LPAREN = r'\('
+t_code_RPAREN = r'\)'
+t_code_COMMA = ','
 def t_code_IDENTIFIER(t):
 	'[a-zA-Z0-9_]+'
 	u = t.value.upper()
