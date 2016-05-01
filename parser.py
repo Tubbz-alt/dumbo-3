@@ -10,6 +10,7 @@ precedence = (
 )
 
 class Node(object):
+	"""Linked list class for string lists"""
 	def __init__(self, data, next):
 		self.data = data
 		self.next = next
@@ -18,8 +19,9 @@ def p_programT(p):
 	'''
 	program : TEXT
 	'''
+	text = p[1]
 	def f(context):
-		sys.stdout.write(p[1])
+		sys.stdout.write(text)
 	p[0] = f
 
 def p_programB(p):
@@ -34,9 +36,10 @@ def p_programTI(p):
 	'''
 	p_programT(p)
 	first = p[0]
+	rest = p[2]
 	def f(context):
 		first(context)
-		p[2](context)
+		rest(context)
 	p[0] = f
 
 def p_programBI(p):
@@ -45,9 +48,10 @@ def p_programBI(p):
 	'''
 	p_programB(p)
 	first = p[0]
+	rest = p[2]
 	def f(context):
 		first(context)
-		p[2](context)
+		rest(context)
 	p[0] = f
 
 def p_block(p):
@@ -60,20 +64,27 @@ def p_stmtB(p):
 	'''
 	stmt_list : stmt SEMICOLON
 	'''
-	p[0] = lambda _: Node(p[1], None)
+	p[0] = p[1]
 
 def p_stmtI(p):
 	'''
 	stmt_list : stmt SEMICOLON stmt_list
 	'''
-	p[0] = lambda _: Node(p[1], p[3])
+	p_stmtB(p)
+	first = p[0]
+	rest = p[3]
+	def f(context):
+		first(context)
+		rest(context)
+	p[0] = f
 
 def p_print(p):
 	'''
 	stmt : PRINT str_expr
 	'''
+	arg = p[2]
 	def f(context):
-		sys.stdout.write(p[2](context))
+		sys.stdout.write(arg(context))
 	p[0] = f
 
 def p_forL(p):
@@ -92,20 +103,25 @@ def p_it(p):
 	'''
 	stmt : IF bool_expr DO stmt_list ENDIF
 	'''
+	cond = p[2]
+	body = p[4]
 	def f(context):
-		if p[2](context):
-			p[4](context)
+		if cond(context):
+			body(context)
 	p[0] = f
 
 def p_ite(p):
 	'''
 	stmt : IF bool_expr DO stmt_list ELSE stmt_list ENDIF
 	'''
+	cond = p[2]
+	posbody = p[4]
+	negbody = p[6]
 	def f(context):
-		if p[2](context):
-			p[4](context)
+		if cond(context):
+			posbody(context)
 		else:
-			p[6](context)
+			negbody(context)
 	p[0] = f
 
 def p_assignE(p):
@@ -113,34 +129,40 @@ def p_assignE(p):
 	stmt	: IDENTIFIER ASSIGN str_expr
 			| IDENTIFIER ASSIGN str_list
 	'''
+	lvalue = p[1]
+	rvalue = p[3]
 	def f(context):
-		context[p[1]] = p[3](context)
+		context[lvalue] = rvalue(context)
 	p[0] = f
 
 def p_stringL(p):
 	'''
 	str_expr : STRING
 	'''
-	p[0] = lambda _: p[1]
+	s = p[1]
+	p[0] = lambda _: s
 
 def p_stringV(p):
 	'''
 	str_expr : IDENTIFIER
 	'''
-	p[0] = lambda context: context[p[1]]
+	variable = p[1]
+	p[0] = lambda context: context[variable]
 
 def p_boolL(p):
 	'''
 	bool_expr	: TRUE
 				| FALSE
 	'''
-	p[0] = lambda _: bool(p[1].lower())
+	value = bool(p[1].lower())
+	p[0] = lambda _: value
 
 def p_boolV(p):
 	'''
 	bool_expr : IDENTIFIER
 	'''
-	p[0] = lambda context: context[p[1]]
+	variable = p[1]
+	p[0] = lambda context: context[variable]
 
 def p_boolP(p):
 	'''
@@ -152,20 +174,26 @@ def p_boolE(p):
 	'''
 	bool_expr : bool_expr EQUALS bool_expr
 	'''
-	p[0] = lambda context: p[1](context) == p[3](context)
+	left = p[1]
+	right = p[3]
+	p[0] = lambda context: left(context) == right(context)
 	#TODO allow comparing string literals, for example
 
 def p_boolNE(p):
 	'''
 	bool_expr : bool_expr DIFFERENT bool_expr
 	'''
-	p[0] = lambda context: p[1](context) != p[3](context)
+	left = p[1]
+	right = p[3]
+	p[0] = lambda context: left(context) != right(context)
 
 def p_concat(p):
 	'''
 	str_expr : str_expr CONCAT str_expr
 	'''
-	p[0] = lambda context: p[1](context)+p[3](context)
+	first = p[1]
+	second = p[3]
+	p[0] = lambda context: first(context) + second(context)
 
 def p_stringList(p):
 	'''
@@ -177,7 +205,8 @@ def p_strsB(p):
 	'''
 	strs : STRING
 	'''
-	p[0] = Node(lambda _: p[1], None)
+	s = p[1]
+	p[0] = Node(lambda _: s, None)
 
 def p_strsI(p):
 	'''
