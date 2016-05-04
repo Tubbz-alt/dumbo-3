@@ -82,27 +82,77 @@ def p_stmtI(p):
 
 def p_print(p):
 	'''
-	stmt	: PRINT str_expr
+	stmt	: PRINT expr
 			| PRINT str_list
-			| PRINT int_expr
 	'''
 	arg = p[2]
 	def f(context):
 		sys.stdout.write(arg(context))
 	p[0] = f
 
-def p_intexpr(p):
+def p_exprPar(p):
 	'''
-	int_expr	: LPAREN int_expr RPAREN
-				| int_expr PLUS int_expr
-				| int_expr MINUS int_expr
-				| int_expr TIMES int_expr
-				| int_expr DIV int_expr
-				| INT
+	expr : LPAREN expr RPAREN
 	'''
-	def f(context):
-		return '42'
-	p[0] = f
+	p[0] = p[2]
+
+def p_exprL(p):
+	'''
+	expr	: INT
+			| STRING
+	'''
+	p[0] = lambda _: p[1]
+
+def p_exprB(p):
+	'''
+	expr	: TRUE
+			| FALSE
+	'''
+	value = bool(p[1].lower())
+	p[0] = lambda _: value
+
+def p_exprV(p):
+	'''
+	expr : IDENTIFIER
+	'''
+	variable = p[1]
+	p[0] = lambda context: context[variable]
+
+def p_exprBin(p):
+	'''
+	expr : expr binop expr
+	'''
+	left = p[1]
+	op = p[2]
+	right = p[3]
+	p[0] = lambda context: op(left(context), right(context))
+
+def p_binop(p):
+	'''
+	binop	: LT
+			| GT
+			| LE
+			| GE
+			| EQUALS
+			| DIFFERENT
+			| PLUS
+			| MINUS
+			| TIMES
+			| DIV
+	'''
+	o = {
+		'<': lambda x,y: x<y,
+		'>': lambda x,y: x>y,
+		'>=': lambda x,y: x>=y,
+		'<=': lambda x,y: x<=y,
+		'=': lambda x,y: x==y,
+		'!=': lambda x,y: x!=y,
+		'+': lambda x,y: x+y,
+		'-': lambda x,y: x-y,
+		'*': lambda x,y: x*y,
+		'/': lambda x,y: x/y,
+	}
+	return o[p]
 
 def p_forL(p):
 	'''
@@ -118,7 +168,7 @@ def p_forV(p):
 
 def p_it(p):
 	'''
-	stmt : IF bool_expr DO stmt_list ENDIF
+	stmt : IF expr DO stmt_list ENDIF
 	'''
 	cond = p[2]
 	body = p[4]
@@ -129,7 +179,7 @@ def p_it(p):
 
 def p_ite(p):
 	'''
-	stmt : IF bool_expr DO stmt_list ELSE stmt_list ENDIF
+	stmt : IF expr DO stmt_list ELSE stmt_list ENDIF
 	'''
 	cond = p[2]
 	posbody = p[4]
@@ -158,51 +208,6 @@ def p_stringL(p):
 	'''
 	s = p[1]
 	p[0] = lambda _: s
-
-def p_stringV(p):
-	'''
-	str_expr : IDENTIFIER
-	'''
-	variable = p[1]
-	p[0] = lambda context: context[variable]
-
-def p_boolL(p):
-	'''
-	bool_expr	: TRUE
-				| FALSE
-	'''
-	value = bool(p[1].lower())
-	p[0] = lambda _: value
-
-def p_boolV(p):
-	'''
-	bool_expr : IDENTIFIER
-	'''
-	variable = p[1]
-	p[0] = lambda context: context[variable]
-
-def p_boolP(p):
-	'''
-	bool_expr : LPAREN bool_expr RPAREN
-	'''
-	p[0] = p[1]
-
-def p_boolE(p):
-	'''
-	bool_expr : bool_expr EQUALS bool_expr
-	'''
-	left = p[1]
-	right = p[3]
-	p[0] = lambda context: left(context) == right(context)
-	#TODO allow comparing string literals, for example
-
-def p_boolNE(p):
-	'''
-	bool_expr : bool_expr DIFFERENT bool_expr
-	'''
-	left = p[1]
-	right = p[3]
-	p[0] = lambda context: left(context) != right(context)
 
 def p_concat(p):
 	'''
