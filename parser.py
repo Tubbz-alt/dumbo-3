@@ -3,12 +3,11 @@ from ply import yacc
 from lexer import lex, tokens
 
 precedence = (
+	('nonassoc', 'EQUALS', 'DIFFERENT', 'LT', 'GT', 'LE', 'GE'),
+	('left', 'COMMA'),
+	('left', 'CONCAT'),
 	('left', 'PLUS', 'MINUS'),
 	('left', 'TIMES', 'DIV'),
-	('left', 'CONCAT'),
-	('left', 'EQUALS'),
-	('left', 'DIFFERENT'),
-	('left', 'COMMA'),
 )
 
 class Node(object):
