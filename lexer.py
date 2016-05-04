@@ -49,7 +49,7 @@ def t_code_IDENTIFIER(t):
 		t.type = u
 	return t
 def t_code_STRING(t):
-	r"'([^'\n]|\')+'"
+	r"'([^'\n]|\\')*'"
 	t.value = t.value[1:-1].replace(r"\'", "'")
 	#TODO regex replace for at least unescaped \n and \t
 	return t
