@@ -101,7 +101,8 @@ def p_exprL(p):
 	expr	: INT
 			| STRING
 	'''
-	p[0] = lambda _: p[1]
+	value = p[1]
+	p[0] = lambda _: value
 
 def p_exprB(p):
 	'''
