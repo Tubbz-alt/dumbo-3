@@ -79,15 +79,30 @@ def p_stmtI(p):
 		rest(context)
 	p[0] = f
 
-def p_print(p):
+def print_list(a):
+	while a:
+		sys.stdout.write(a.data)
+		a = a.next
+
+def p_printE(p):
 	'''
-	stmt	: PRINT expr
-			| PRINT str_list
+	stmt : PRINT expr
 	'''
 	arg = p[2]
 	def f(context):
-		sys.stdout.write(arg(context))
+		a = arg(context)
+		if isinstance(a, Node):
+			print_list(a)
+		else:
+			sys.stdout.write(str(a))
 	p[0] = f
+
+def p_printL(p):
+	'''
+	stmt : PRINT str_list
+	'''
+	arg = p[2]
+	p[0] = lambda _: print_list(arg)
 
 def p_exprPar(p):
 	'''
@@ -190,8 +205,7 @@ def p_ite(p):
 
 def p_assignE(p):
 	'''
-	stmt	: IDENTIFIER ASSIGN expr
-			| IDENTIFIER ASSIGN str_list
+	stmt : IDENTIFIER ASSIGN expr
 	'''
 	lvalue = p[1]
 	rvalue = p[3]
@@ -199,28 +213,45 @@ def p_assignE(p):
 		context[lvalue] = rvalue(context)
 	p[0] = f
 
-def p_stringList(p):
+def p_assignL(p):
 	'''
-	str_list	: LPAREN STRING COMMA strs RPAREN
-				| LPAREN STRING COMMA RPAREN
-				| LPAREN RPAREN
+	stmt : IDENTIFIER ASSIGN str_list
 	'''
-	p[0] = lambda _: '42'
+	lvalue = p[1]
+	rvalue = p[3]
+	def f(context):
+		context[lvalue] = rvalue
+	p[0] = f
+
+def p_stringListE(p):
+	'''
+	str_list : LPAREN RPAREN
+	'''
+	p[0] = None
+
+def p_stringList1(p):
+	'''
+	str_list : LPAREN STRING COMMA RPAREN
+	'''
+	p[0] = Node(p[2], None)
+
+def p_stringListM(p):
+	'''
+	str_list : LPAREN STRING COMMA strs RPAREN
+	'''
+	p[0] = Node(p[2], p[4])
 
 def p_strsB(p):
 	'''
 	strs : STRING
 	'''
-	s = p[1]
-	p[0] = Node(lambda _: s, None)
+	p[0] = Node(p[1], None)
 
 def p_strsI(p):
 	'''
 	strs : STRING COMMA strs
 	'''
-	p_strsB(p)
-	first = p[0]
-	p[0] = Node(lambda _: first, p[3])
+	p[0] = Node(p[1], p[3])
 
 def p_error(p):
 	print "Syntax error near line", str(p.lineno)
