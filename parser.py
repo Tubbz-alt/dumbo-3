@@ -120,27 +120,20 @@ def p_exprV(p):
 
 def p_exprBin(p):
 	'''
-	expr : expr binop expr
+	expr	: expr LT expr
+			| expr LE expr
+			| expr GT expr
+			| expr GE expr
+			| expr EQUALS expr
+			| expr DIFFERENT expr
+			| expr PLUS expr
+			| expr MINUS expr
+			| expr TIMES expr
+			| expr DIV expr
+			| expr CONCAT expr
 	'''
 	left = p[1]
-	op = p[2]
-	right = p[3]
-	p[0] = lambda context: op(left(context), right(context))
-
-def p_binop(p):
-	'''
-	binop	: LT
-			| GT
-			| LE
-			| GE
-			| EQUALS
-			| DIFFERENT
-			| PLUS
-			| MINUS
-			| TIMES
-			| DIV
-	'''
-	o = {
+	op = {
 		'<': lambda x,y: x<y,
 		'>': lambda x,y: x>y,
 		'>=': lambda x,y: x>=y,
@@ -151,8 +144,12 @@ def p_binop(p):
 		'-': lambda x,y: x-y,
 		'*': lambda x,y: x*y,
 		'/': lambda x,y: x/y,
-	}
-	return o[p]
+		'.': lambda x,y: x+y,
+	}[p[2]]
+	right = p[3]
+	def f(context):
+		return op(left(context), right(context))
+	p[0] = f
 
 def p_forL(p):
 	'''
@@ -193,7 +190,7 @@ def p_ite(p):
 
 def p_assignE(p):
 	'''
-	stmt	: IDENTIFIER ASSIGN str_expr
+	stmt	: IDENTIFIER ASSIGN expr
 			| IDENTIFIER ASSIGN str_list
 	'''
 	lvalue = p[1]
@@ -201,21 +198,6 @@ def p_assignE(p):
 	def f(context):
 		context[lvalue] = rvalue(context)
 	p[0] = f
-
-def p_stringL(p):
-	'''
-	str_expr : STRING
-	'''
-	s = p[1]
-	p[0] = lambda _: s
-
-def p_concat(p):
-	'''
-	str_expr : str_expr CONCAT str_expr
-	'''
-	first = p[1]
-	second = p[3]
-	p[0] = lambda context: first(context) + second(context)
 
 def p_stringList(p):
 	'''
