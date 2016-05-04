@@ -3,6 +3,8 @@ from ply import yacc
 from lexer import lex, tokens
 
 precedence = (
+	('left', 'PLUS', 'MINUS'),
+	('left', 'TIMES', 'DIV'),
 	('left', 'CONCAT'),
 	('left', 'EQUALS'),
 	('left', 'DIFFERENT'),
@@ -80,11 +82,26 @@ def p_stmtI(p):
 
 def p_print(p):
 	'''
-	stmt : PRINT str_expr
+	stmt	: PRINT str_expr
+			| PRINT str_list
+			| PRINT int_expr
 	'''
 	arg = p[2]
 	def f(context):
 		sys.stdout.write(arg(context))
+	p[0] = f
+
+def p_intexpr(p):
+	'''
+	int_expr	: LPAREN int_expr RPAREN
+				| int_expr PLUS int_expr
+				| int_expr MINUS int_expr
+				| int_expr TIMES int_expr
+				| int_expr DIV int_expr
+				| INT
+	'''
+	def f(context):
+		return '42'
 	p[0] = f
 
 def p_forL(p):
@@ -197,9 +214,11 @@ def p_concat(p):
 
 def p_stringList(p):
 	'''
-	str_list : LPAREN strs RPAREN
+	str_list	: LPAREN STRING COMMA strs RPAREN
+				| LPAREN STRING COMMA RPAREN
+				| LPAREN RPAREN
 	'''
-	p[0] = p[2]
+	p[0] = lambda _: '42'
 
 def p_strsB(p):
 	'''

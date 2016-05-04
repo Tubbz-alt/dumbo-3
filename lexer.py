@@ -4,7 +4,8 @@ from ply import lex
 tokens = ['TEXT', 'BEGIN', 'END',
 	'STRING', 'IDENTIFIER', 'CONCAT', 'SEMICOLON', 'ASSIGN',
 	'LPAREN', 'RPAREN', 'COMMA',
-	'EQUALS', 'DIFFERENT']
+	'EQUALS', 'DIFFERENT',
+	'INT', 'PLUS', 'MINUS', 'TIMES', 'DIV']
 keywords = ('PRINT', 'FOR', 'IN', 'DO', 'ENDFOR',
 	'IF', 'ENDIF', 'ELSE', 'TRUE', 'FALSE')
 tokens.extend(keywords) #idea from http://stackoverflow.com/a/5028233
@@ -42,11 +43,19 @@ t_code_DIFFERENT = '!='
 t_code_LPAREN = r'\('
 t_code_RPAREN = r'\)'
 t_code_COMMA = ','
+t_code_PLUS = r'\+'
+t_code_MINUS = '-'
+t_code_TIMES = r'\*'
+t_code_DIV = r'/'
 def t_code_IDENTIFIER(t):
-	'[a-zA-Z0-9_]+'
+	'[a-zA-Z_][a-zA-Z0-9_]*'
 	u = t.value.upper()
 	if u in keywords:
 		t.type = u
+	return t
+def t_code_INT(t):
+	'[0-9]+'
+	t.value = int(t.value)
 	return t
 def t_code_STRING(t):
 	r"'([^'\n]|\\')*'"
