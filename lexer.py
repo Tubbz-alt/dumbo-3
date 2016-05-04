@@ -4,7 +4,7 @@ from ply import lex
 tokens = ['TEXT', 'BEGIN', 'END',
 	'STRING', 'IDENTIFIER', 'CONCAT', 'SEMICOLON', 'ASSIGN',
 	'LPAREN', 'RPAREN', 'COMMA',
-	'EQUALS', 'DIFFERENT',
+	'EQUALS', 'DIFFERENT', 'LT', 'GT', 'LE', 'GE',
 	'INT', 'PLUS', 'MINUS', 'TIMES', 'DIV']
 keywords = ('PRINT', 'FOR', 'IN', 'DO', 'ENDFOR',
 	'IF', 'ENDIF', 'ELSE', 'TRUE', 'FALSE')
@@ -47,6 +47,10 @@ t_code_PLUS = r'\+'
 t_code_MINUS = '-'
 t_code_TIMES = r'\*'
 t_code_DIV = r'/'
+t_code_LT = '<'
+t_code_GT = '>'
+t_code_LE = '<='
+t_code_GE = '>='
 def t_code_IDENTIFIER(t):
 	'[a-zA-Z_][a-zA-Z0-9_]*'
 	u = t.value.upper()
