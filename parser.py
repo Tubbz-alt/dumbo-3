@@ -237,7 +237,6 @@ def p_strsI(p):
 
 def p_error(p):
 	print "Syntax error near line", str(p.lineno)
-	yacc.error
 
 
 yacc = yacc.yacc()
