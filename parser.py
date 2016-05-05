@@ -8,6 +8,7 @@ precedence = (
 	('left', 'CONCAT'),
 	('left', 'PLUS', 'MINUS'),
 	('left', 'TIMES', 'DIV'),
+	('right', 'UNEG'),
 )
 
 class Node(object):
@@ -109,6 +110,13 @@ def p_exprPar(p):
 	expr : LPAREN expr RPAREN
 	'''
 	p[0] = p[2]
+
+def p_exprN(p):
+	'''
+	expr : MINUS INT %prec UNEG
+	'''
+	value = -p[2]
+	p[0] = lambda _: value
 
 def p_exprL(p):
 	'''
