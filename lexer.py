@@ -55,7 +55,7 @@ def t_code_IDENTIFIER(t):
 	'[a-zA-Z_][a-zA-Z0-9_]*'
 	u = t.value.upper()
 	if u in keywords:
-		t.type = u
+		t.type = t.value = u
 	return t
 def t_code_INT(t):
 	'[0-9]+'
