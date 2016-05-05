@@ -308,4 +308,4 @@ yacc = yacc.yacc()
 if __name__=="__main__":
 	import sys
 	inp = sys.stdin.read()
-	yacc.parse(inp)({})
+	yacc.parse(inp, debug=("-d" in sys.argv))({})
