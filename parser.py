@@ -158,15 +158,9 @@ def p_exprV(p):
 	variable = p[1]
 	p[0] = lambda context: context[variable]
 
-def p_exprBin(p):
+def p_exprOps(p):
 	'''
-	expr	: expr LT expr
-			| expr LE expr
-			| expr GT expr
-			| expr GE expr
-			| expr EQUALS expr
-			| expr DIFFERENT expr
-			| expr PLUS expr
+	expr	: expr PLUS expr
 			| expr MINUS expr
 			| expr TIMES expr
 			| expr DIV expr
@@ -174,12 +168,6 @@ def p_exprBin(p):
 	'''
 	left = p[1]
 	op = {
-		'<': lambda x,y: x<y,
-		'>': lambda x,y: x>y,
-		'>=': lambda x,y: x>=y,
-		'<=': lambda x,y: x<=y,
-		'=': lambda x,y: x==y,
-		'!=': lambda x,y: x!=y,
 		'+': lambda x,y: x+y,
 		'-': lambda x,y: x-y,
 		'*': lambda x,y: x*y,
@@ -189,6 +177,34 @@ def p_exprBin(p):
 	right = p[3]
 	def f(context):
 		return op(left(context), right(context))
+	p[0] = f
+
+def p_exprComp(p):
+	'''
+	expr	: expr LT expr
+			| expr LE expr
+			| expr GT expr
+			| expr GE expr
+			| expr EQUALS expr
+			| expr DIFFERENT expr
+	'''
+	left = p[1]
+	op = {
+		'<': lambda x,y: x<y,
+		'>': lambda x,y: x>y,
+		'>=': lambda x,y: x>=y,
+		'<=': lambda x,y: x<=y,
+		'=': lambda x,y: x==y,
+		'!=': lambda x,y: x!=y,
+	}[p[2]]
+	right = p[3]
+	def f(context):
+		l = left(context)
+		r = right(context)
+		if type(l) == type(r):
+			return op(l, r)
+		else:
+			raise TypeError
 	p[0] = f
 
 def p_exprBinLog(p):
