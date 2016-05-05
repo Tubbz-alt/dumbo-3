@@ -21,13 +21,23 @@ class Node(object):
 		self.data = data
 		self.next = next
 
+class Context(object):
+	def __init__(self, output=sys.stdout):
+		self.vars = {}
+		self.out = output
+
+class FakeOutput(object):
+	def write(self, _):
+		pass
+
+
 def p_programT(p):
 	'''
 	program : TEXT
 	'''
 	text = p[1]
 	def f(context):
-		sys.stdout.write(text)
+		context.out.write(text)
 	p[0] = f
 
 def p_programB(p):
@@ -84,9 +94,9 @@ def p_stmtI(p):
 		rest(context)
 	p[0] = f
 
-def print_list(a):
+def print_list(context, a):
 	while a:
-		sys.stdout.write(a.data)
+		context.out.write(a.data)
 		a = a.next
 
 def p_printE(p):
@@ -97,9 +107,9 @@ def p_printE(p):
 	def f(context):
 		a = arg(context)
 		if isinstance(a, Node):
-			print_list(a)
+			print_list(context, a)
 		else:
-			sys.stdout.write(str(a))
+			context.out.write(str(a))
 	p[0] = f
 
 def p_printL(p):
@@ -107,7 +117,7 @@ def p_printL(p):
 	stmt : PRINT str_list
 	'''
 	arg = p[2]
-	p[0] = lambda _: print_list(arg)
+	p[0] = lambda context: print_list(context, arg)
 
 def p_exprPar(p):
 	'''
@@ -156,7 +166,7 @@ def p_exprV(p):
 	expr : IDENTIFIER
 	'''
 	variable = p[1]
-	p[0] = lambda context: context[variable]
+	p[0] = lambda context: context.vars[variable]
 
 def p_exprOps(p):
 	'''
@@ -273,7 +283,7 @@ def p_assignE(p):
 	lvalue = p[1]
 	rvalue = p[3]
 	def f(context):
-		context[lvalue] = rvalue(context)
+		context.vars[lvalue] = rvalue(context)
 	p[0] = f
 
 def p_assignL(p):
@@ -283,7 +293,7 @@ def p_assignL(p):
 	lvalue = p[1]
 	rvalue = p[3]
 	def f(context):
-		context[lvalue] = rvalue
+		context.vars[lvalue] = rvalue
 	p[0] = f
 
 def p_stringListE(p):
@@ -324,4 +334,5 @@ yacc = yacc.yacc()
 if __name__=="__main__":
 	import sys
 	inp = sys.stdin.read()
-	yacc.parse(inp, debug=("-d" in sys.argv))({})
+	context = Context(sys.stdout)
+	yacc.parse(inp, debug=("-d" in sys.argv))(context)
