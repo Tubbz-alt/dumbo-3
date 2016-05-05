@@ -38,3 +38,6 @@ if __name__ == "__main__":
 				yacc.parse(source)(c)
 				res = res and o.test()
 		sys.exit(int(not res))
+	else:
+		print >>sys.stderr, "usage: %s test [test...]" % sys.argv[0]
+		sys.exit(2)
