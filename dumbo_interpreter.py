@@ -1,9 +1,11 @@
 #!/usr/bin/env python2
 import sys
+from parser import yacc, Context, FakeOutput
 
-def execute(filename, output):
-	if output != None:
-		output.write("TODO\n")
+def execute(filename, context):
+	with open(filename, "r") as file:
+		source = file.read()
+	yacc.parse(source)(c)
 
 
 if len(sys.argv) != 4:
@@ -13,8 +15,10 @@ else:
 	try:
 		f = file(sys.argv[3], "w")
 		try:
-			execute(sys.argv[1], None)
-			execute(sys.argv[2], f)
+			c = Context(FakeOutput())
+			execute(sys.argv[1], c)
+			c.out = f
+			execute(sys.argv[2], c)
 		finally:
 			f.close()
 	except (IOError, OSError) as e:
