@@ -3,9 +3,13 @@ from ply import yacc
 from lexer import lex, tokens
 
 precedence = (
-	('nonassoc', 'EQUALS', 'DIFFERENT', 'LT', 'GT', 'LE', 'GE'),
+	('nonassoc', 'EQUALS', 'DIFFERENT'),
 	('left', 'COMMA'),
 	('left', 'CONCAT'),
+	('left', 'OR', 'XOR'),
+	('left', 'AND'),
+	('right', 'NOT'),
+	('nonassoc', 'LT', 'GT', 'LE', 'GE'),
 	('left', 'PLUS', 'MINUS'),
 	('left', 'TIMES', 'DIV'),
 	('right', 'UNEG'),
@@ -134,6 +138,19 @@ def p_exprB(p):
 	value = p[1] == "TRUE"
 	p[0] = lambda _: value
 
+def p_exprLN(p):
+	'''
+	expr : NOT expr
+	'''
+	value = p[2]
+	def f(context):
+		v = value(context)
+		if type(v) == bool:
+			return not v
+		else:
+			raise TypeError
+	p[0] = f
+
 def p_exprV(p):
 	'''
 	expr : IDENTIFIER
@@ -172,6 +189,28 @@ def p_exprBin(p):
 	right = p[3]
 	def f(context):
 		return op(left(context), right(context))
+	p[0] = f
+
+def p_exprBinLog(p):
+	'''
+	expr	: expr AND expr
+			| expr OR expr
+			| expr XOR expr
+	'''
+	left = p[1]
+	op = {
+		'AND': lambda x,y: x and y,
+		'OR': lambda x,y: x or y,
+		'XOR': lambda x,y: x ^ y,
+	}[p[2]]
+	right = p[3]
+	def f(context):
+		l = left(context)
+		r = right(context)
+		if type(l)==bool and type(r)==bool:
+			return op(left(context), right(context))
+		else:
+			raise TypeError
 	p[0] = f
 
 def p_forL(p):

@@ -7,6 +7,7 @@ tokens = ['TEXT', 'BEGIN', 'END',
 	'EQUALS', 'DIFFERENT', 'LT', 'GT', 'LE', 'GE',
 	'INT', 'PLUS', 'MINUS', 'TIMES', 'DIV']
 keywords = ('PRINT', 'FOR', 'IN', 'DO', 'ENDFOR',
+	'AND', 'OR', 'XOR', 'NOT',
 	'IF', 'ENDIF', 'ELSE', 'TRUE', 'FALSE')
 tokens.extend(keywords) #idea from http://stackoverflow.com/a/5028233
 states = (('code', 'exclusive'), )
