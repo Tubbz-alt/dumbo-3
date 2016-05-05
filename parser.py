@@ -131,7 +131,7 @@ def p_exprB(p):
 	expr	: TRUE
 			| FALSE
 	'''
-	value = bool(p[1].lower())
+	value = p[1] == "TRUE"
 	p[0] = lambda _: value
 
 def p_exprV(p):
