@@ -178,15 +178,21 @@ def p_exprOps(p):
 	'''
 	left = p[1]
 	op = {
-		'+': lambda x,y: x+y,
-		'-': lambda x,y: x-y,
-		'*': lambda x,y: x*y,
-		'/': lambda x,y: x/y,
-		'.': lambda x,y: x+y,
+		'+': {(int, int): lambda x,y: x+y},
+		'-': {(int, int): lambda x,y: x-y},
+		'*': {(int, int): lambda x,y: x*y},
+		'/': {(int, int): lambda x,y: x/y},
+		'.': {(str, str): lambda x,y: x+y},
 	}[p[2]]
 	right = p[3]
 	def f(context):
-		return op(left(context), right(context))
+		l = left(context)
+		r = right(context)
+		k = (type(l), type(r))
+		if k in op:
+			return op[k](l, r)
+		else:
+			raise TypeError
 	p[0] = f
 
 def p_exprComp(p):
@@ -258,8 +264,12 @@ def p_it(p):
 	cond = p[2]
 	body = p[4]
 	def f(context):
-		if cond(context):
-			body(context)
+		c = cond(context)
+		if type(c) == bool:
+			if c:
+				body(context)
+		else:
+			raise TypeError
 	p[0] = f
 
 def p_ite(p):
@@ -270,10 +280,14 @@ def p_ite(p):
 	posbody = p[4]
 	negbody = p[6]
 	def f(context):
-		if cond(context):
-			posbody(context)
+		c = cond(context)
+		if type(c) == bool:
+			if c:
+				posbody(context)
+			else:
+				negbody(context)
 		else:
-			negbody(context)
+			raise TypeError
 	p[0] = f
 
 def p_assignE(p):
