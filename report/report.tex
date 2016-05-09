@@ -36,33 +36,147 @@
 
 
 \section{Énoncé}
-TODO
+Il nous est demandé d'implémenter un DSL\footnote{Domain-Specific Language}
+afin de gérer la mise en page de données dans un fichier texte (HTML ou non)
+à l'aide de PLY, un outil libre dédié à la création de compilateurs.
+Ce langage doit implémenter :
+\begin{itemize}
+\item les opérations arithmétiques et booléennes
+\item les concaténations de listes
+\item les affectations de variables
+\item les boucles sur des listes de chaînes de caractères constantes
+\item les conditions
+\end{itemize}
 
 
 \section{Grammaire}
-TODO
+Pour ne pas confondre expressions et instructions, le symbole de variable
+\texttt{expr} de l'énoncé a été renommé en \texttt{stmt}.
+La structure générale d'un programme est la suivante :
+\begin{verbatim}
+program : TEXT
+        | block
+        | TEXT program
+        | block program
+block   : BEGIN stmt_l END
+stmt_l  : stmt SEMICOLON
+        | stmt SEMICOLON stmt_l
+\end{verbatim}
 
+Les expressions arithmétiques et booléennes sont décrites
+sous leur forme ambiguë pour plus de simplicité
+(cf. table \ref{tab:prio}) :
+\begin{verbatim}
+expr    : INT
+        | STRING
+        | TRUE
+        | FALSE
+        | ID
+        | LPAREN expr RPAREN
+        | NOT expr
+        | MINUS INT %prec UNEG %FIXME
+        | expr PLUS expr
+        | expr MINUS expr
+        | expr TIMES expr
+        | expr DIV expr
+        | expr CONCAT expr
+        | expr LT expr
+        | expr LE expr
+        | expr GT expr
+        | expr GE expr
+        | expr EQUALS expr
+        | expr DIFFERENT expr
+        | expr AND expr
+        | expr OR expr
+        | expr XOR expr
+\end{verbatim}
 
-\section{Architecture}
-TODO PlantUML encore une fois ?
-%\begin{figure}[h]
-%\center
-%\input{seginter.tex}
-%\caption{Intersection de segments}
-%\end{figure}
+\begin{table}
+\center
+\begin{tabular}{l|l}
+	N & \texttt{EQUALS}, \texttt{DIFFERENT} \\
+	L & \texttt{COMMA} \\
+	L & \texttt{CONCAT} \\
+	N & \texttt{OR}, \texttt{XOR} \\
+	L & \texttt{AND} \\
+	R & \texttt{NOT} \\
+	N & \texttt{LT}, \texttt{GT}, \texttt{LE}, \texttt{GE} \\
+	N & \texttt{PLUS}, \texttt{MINUS} \\
+	N & \texttt{TIMES}, \texttt{DIV} \\
+	R & \texttt{UNEG}
+\end{tabular}
+\caption{Priorité croissante des opérateurs}
+\label{tab:prio}
+\end{table}
+
+Les instructions sont les suivantes :
+\begin{verbatim}
+stmt : PRINT expr
+     | PRINT str_l
+     | FOR ID IN str_l DO stmt_l ENDFOR
+     | FOR ID IN ID DO stmt_l ENDFOR
+     | IF expr DO stmt_l ENDIF
+     | IF expr DO stmt_l ELSE stmt_l ENDIF
+     | ID ASSIGN expr
+     | ID ASSIGN str_l
+\end{verbatim}
+
+Les listes de chaînes de caractères sont définies de manière à ne pas permettre
+de confusion entre une liste d'un élément et une expression entre parenthèses :
+\begin{verbatim}
+str_l : LPAREN RPAREN
+      | LPAREN STRING COMMA RPAREN
+      | LPAREN STRING COMMA strs RPAREN
+strs  : STRING
+      | STRING COMMA strs
+\end{verbatim}
 
 
 \section{Implémentation}
+\subsection{Fichier de données}
+Le fichier de données est interprété normalement sauf qu'il ne pourra jamais
+afficher quoi que ce soit : un \textit{mock} de \texttt{stdout} remplace son
+flux de sortie.
+
+
+\subsection{Listes}
+Les listes sont de simples listes chaînées. Cela évite de les construire
+naïvement en $\bigO(n^2)$ par \texttt{append} successifs et le fonctionnement
+des boucles \texttt{for} reste simple. La fonction associée à ces règles
+ne retourne pas de fonction mais directement une instance de \texttt{Node}.
+
+
+\subsection{if}
+On ne peut pas exécuter une instruction directement lorsqu'elle est reconnue :
+un \texttt{if} n'aurait aucune utilité si avant d'être détecté, tout son contenu
+était de toute façon exécuté, peut-être même avant la création des variables
+nécessaires à son bon fonctionnement.
+
+Comme la plupart des autres règles, celles associées aux
+\texttt{IF DO (ELSE) ENDIF} ne retournent pas une valeur mais une fonction
+qui sera exécutée plus tard au bon moment : celle-ci évalue la condition,
+vérifie que c'est bien un booléen puis exécute son <<~contenu positif~>>
+si elle est vérifiée. Sinon, si un \texttt{ELSE} existe, l'autre partie est
+interprétée récursivement.
+
+
 \subsection{for}
 TODO
 
 
-\subsection{if}
-TODO
-
-
 \section{Problèmes rencontrés}
-TODO
+L'objet fourni par PLY en paramètre de chaque fonction
+associée à une règle est toujours le même. On ne peut ainsi
+pas espérer accéder au même \texttt{p[1]} depuis une fonction
+que l'on retourne, il est nécessaire de créer une \textit{closure}
+avec des variables contenant les éléments <<~réduits~>>.
+Si on ne le fait pas, l'interpréteur peut partir en récursion infinie
+ou calculer n'importe quoi alors que le programme semble cohérent.
+
+La vérification statique des types n'est pas simple puisqu'à chaque bloc,
+il faudrait associer un environnement. Ici, le \texttt{parser} retourne
+directement une fonction qui peut être appelée pour exécuter le script
+empêchant ainsi ce type de vérification.
 
 
 \section{Conclusion}
