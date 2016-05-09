@@ -74,7 +74,7 @@ expr    : INT
         | ID
         | LPAREN expr RPAREN
         | NOT expr
-        | MINUS INT %prec UNEG %FIXME
+        | MINUS expr %prec UNEG
         | expr PLUS expr
         | expr MINUS expr
         | expr TIMES expr

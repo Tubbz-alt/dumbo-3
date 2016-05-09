@@ -127,10 +127,10 @@ def p_exprPar(p):
 
 def p_exprN(p):
 	'''
-	expr : MINUS INT %prec UNEG
+	expr : MINUS expr %prec UNEG
 	'''
-	value = -p[2]
-	p[0] = lambda _: value
+	value = p[2]
+	p[0] = lambda _: -value(context)
 
 def p_exprL(p):
 	'''
