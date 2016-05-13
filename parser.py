@@ -245,11 +245,27 @@ def p_exprBinLog(p):
 			raise TypeError
 	p[0] = f
 
+def for_instruction(p):
+	pass
+
 def p_forL(p):
 	'''
 	stmt : FOR IDENTIFIER IN str_list DO stmt_list ENDFOR
 	'''
-	pass
+	identif = p[2]
+	slist = p[4]
+	instr = p[6]
+	def f(context):
+		i = identif
+		s = slist
+		if isinstance(s, Node):
+			while s != None:
+				context.vars[i] = s.data
+				s = s.next
+				instr(context)
+		else :
+			raise TypeError
+	p[0] = f
 
 def p_forV(p):
 	'''
