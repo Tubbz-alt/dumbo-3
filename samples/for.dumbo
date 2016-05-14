@@ -1,4 +1,7 @@
 {{
+c := 'pouet';
+print '|||'.c.'|||';
 l := ('my ', 'first ', 'list ');
 for c in l do print '*'.c.' '; endfor;
+print '|||'.c.'|||';
 }}

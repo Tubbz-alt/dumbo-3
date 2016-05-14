@@ -245,12 +245,12 @@ def p_exprBinLog(p):
 			raise TypeError
 	p[0] = f
 
-def for_body(var, slist, instr):
+def for_body(var, slist, instr, ctxt):
 	if isinstance(slist, Node):
 		while slist != None:
-			context.vars[var] = slist.data
+			ctxt.vars[var] = slist.data
 			slist = slist.next
-			instr(context)
+			instr(ctxt)
 	else :
 		raise TypeError
 
@@ -262,7 +262,12 @@ def p_forL(p):
 	slist = p[4]
 	instr = p[6]
 	def f(context):
-		for_body(identif, slist, instr)
+		old_id = context.vars.get(identif)
+		for_body(identif, slist, instr, context)
+		if old_id != None :
+			context.vars[identif] = old_id
+		else :
+			del context.vars[identif]
 	p[0] = f
 
 def p_forV(p):
@@ -273,8 +278,13 @@ def p_forV(p):
 	id2 = p[4]
 	instr = p[6]
 	def f(context):
+		old_id = context.vars.get(id1)
 		s = context.vars.get(id2)
-		for_body(id1, s, instr)
+		for_body(id1, s, instr, context)
+		if old_id != None :
+			context.vars[id1] = old_id
+		else :
+			del context.vars[id1]
 	p[0] = f
 	
 

@@ -1,0 +1,5 @@
+{{
+nom := 'Pijke';
+prenom := 'Fabian';
+cours := ('Intelligence artificielle', 'Projet info', 'Simulation');
+}}
