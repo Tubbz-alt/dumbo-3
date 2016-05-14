@@ -1,0 +1,13 @@
+<html>
+	<head><title>{{ print nom.' '.prenom; }}</title></head>
+	<body>
+	<h1> {{ print nom.' '.prenom; }}</h1>
+	Cours : {{ 	
+		i := 0;
+		for c in cours do
+			print c;
+			if i != 2 do print ', '; endif;
+			i := i + 1;
+			endfor; }}
+	</body>
+</html>

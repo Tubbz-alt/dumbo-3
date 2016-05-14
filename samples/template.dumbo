@@ -5,4 +5,5 @@
 	Cours : {{ 	for c in cours do
 					print c.', ';
 				endfor; }}
+	</body>>
 </html>
