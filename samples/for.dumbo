@@ -1,1 +1,4 @@
-{{for c in c do print c.'*'; endfor;}}
+{{
+l := ('my ', 'first ', 'list ');
+for c in l do print '*'.c.' '; endfor;
+}}
