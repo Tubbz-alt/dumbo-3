@@ -13,6 +13,7 @@ precedence = (
 	('left', 'PLUS', 'MINUS'),
 	('left', 'TIMES', 'DIV'),
 	('right', 'UNEG'),
+	('nonassoc', 'LENGTHOF'),
 )
 
 class Node(object):
@@ -289,50 +290,26 @@ def p_forV(p):
 	p[0] = f
 
 
-def p_lengthofL(p):
+def p_lengthof(p):
 	'''
-	expr : LENGTHOF LPAREN str_list RPAREN
+	expr	: LENGTHOF expr
+			| LENGTHOF str_list
 	'''
-	slist = p[3]
+	slist = p[2]
 	def f(context):
 		size = 0
 		s = slist
-		if isinstance(s, Node):
+		if s==None or isinstance(s, Node):
 			while s != None:
 				s = s.next
 				size += 1
 			return size
-		else :
-			raise TypeError
-	p[0] = f
-
-def p_lengthofID(p):
-	'''
-	expr : LENGTHOF LPAREN IDENTIFIER RPAREN
-	'''
-	identif = p[3]
-	def f(context):
-		s = context.vars.get(identif)
-		if isinstance(s, Node):
-			size = 0
-			while s != None:
-				s = s.next
-				size += 1
-			return size
-		elif isinstance(s, str):
-			return len(s)
-		else :
-			raise TypeError
-	p[0] = f
-
-
-def p_lengthofS(p):
-	'''
-	expr : LENGTHOF LPAREN STRING RPAREN
-	'''
-	s = p[3]
-	def f(context):
-		return len(s)
+		else:
+			s = slist(context)
+			if isinstance(s, str):
+				return len(s)
+			else:
+				raise TypeError
 	p[0] = f
 
 def p_it(p):

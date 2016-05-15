@@ -1,6 +1,6 @@
 {{
-	print lengthof('jean');
+	print lengthof 'jean';
 	print '-';
 	c := 'camion';
-	print lengthof(c);
+	print lengthof c;
 }}

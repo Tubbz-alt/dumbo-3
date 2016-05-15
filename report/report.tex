@@ -63,7 +63,7 @@ stmt_l  : stmt SEMICOLON
         | stmt SEMICOLON stmt_l
 \end{verbatim}
 
-Les expressions arithmétiques et booléennes sont décrites
+Les expressions sont décrites
 sous leur forme ambiguë pour plus de simplicité
 (cf. table \ref{tab:prio}) :
 \begin{verbatim}
@@ -75,6 +75,8 @@ expr    : INT
         | LPAREN expr RPAREN
         | NOT expr
         | MINUS expr %prec UNEG
+        | LENGTHOF expr
+        | LENGTHOF str_l
         | expr PLUS expr
         | expr MINUS expr
         | expr TIMES expr
@@ -91,7 +93,7 @@ expr    : INT
         | expr XOR expr
 \end{verbatim}
 
-\begin{table}
+\begin{table}[b]
 \center
 \begin{tabular}{l|l}
 	N & \texttt{EQUALS}, \texttt{DIFFERENT} \\
@@ -103,7 +105,8 @@ expr    : INT
 	N & \texttt{LT}, \texttt{GT}, \texttt{LE}, \texttt{GE} \\
 	N & \texttt{PLUS}, \texttt{MINUS} \\
 	N & \texttt{TIMES}, \texttt{DIV} \\
-	R & \texttt{UNEG}
+	R & \texttt{UNEG} \\
+	N & \texttt{LENGTHOF}
 \end{tabular}
 \caption{Priorité croissante des opérateurs}
 \label{tab:prio}
@@ -164,7 +167,7 @@ interprétée récursivement.
 Comme déjà explicité précédemment, cette règle, comme beaucoup d'autres,
 retourne une fonction qui sera exécutée en temps voulu. La principale
 caractéristique du \texttt{for} réside dans le parcours de la liste de
-\texttt{STRINGS} qui lui est spécifiée, soit directement, soit par
+\texttt{STRING}s qui lui est spécifiée, soit directement, soit par
 l'intermédiaire d'un identificateur. On peut donc alors avoir deux formes de
 boucle \texttt{for} : \texttt{FOR IDENTIFIER IN str\_l DO stmt\_l} et
 \texttt{FOR IDENTIFIER IN IDENTIFIER DO stmt\_l}.
@@ -176,15 +179,15 @@ le premier \texttt{IDENTIFIER} qui se doit de retrouver sa valeur initiale
 (avant l'entrée dans la boucle) dès qu'il sort du bloc de la boucle. 
 
 \subsection{lengthof}
-%TODO Je ne sais pas trop comment le définir, opérateur, fonction ? 
-Nous avons décidé d'ajouter le mot-clé \texttt{lengthof} afin de faciliter le
-parcours des listes en permettant de connaître leur taille. Celui-ci utilisé de
-la manière suivante permet en effet de connaître la taille d'une liste :
-\texttt{LENGTHOF(str\_l)} ou \texttt{LENGTHOF(ID)} si ce dernier
-référence une liste. Ceci est très pratique dans de mutliples cas de figure.
-Mais ce n'est pas tout, il peut également être utilisé sur des littéraux de la
-façon suivante : \texttt{LENGTHOF(STRING)} ou \texttt{LENGTHOF(ID)} si ce
-dernier référence une chaîne de caractères.
+Nous avons décidé d'ajouter l'opérateur \texttt{lengthof} afin de faciliter le
+parcours des listes en permettant de connaître leur taille. Celui-ci peut être
+utilisé de la manière suivante :
+\texttt{LENGTHOF ('a', 'b')} ou \texttt{LENGTHOF variable} si celle-ci
+référence une liste. Ceci est très pratique dans de multiples cas de figure.
+Mais ce n'est pas tout, il peut également être utilisé
+sur des \textit{strings} :
+le langage est ainsi plus expressif puisqu'il était jusqu'alors incapable
+de calculer la longueur de chaînes de caractères.
 
 \section{Problèmes rencontrés}
 L'objet fourni par PLY en paramètre de chaque fonction
@@ -199,6 +202,7 @@ La vérification statique des types n'est pas simple puisqu'à chaque bloc,
 il faudrait associer un environnement. Ici, le \texttt{parser} retourne
 directement une fonction qui peut être appelée pour exécuter le script
 empêchant ainsi ce type de vérification.
+Python les contrôle aussi à l'exécution.
 
 
 \section{Conclusion}

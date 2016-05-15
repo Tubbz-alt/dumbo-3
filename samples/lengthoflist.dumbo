@@ -1,6 +1,6 @@
 {{ 
-	print lengthof(('jean','claude','dus'));
+	print lengthof ('jean','claude','dus');
 	print '-';
 	l := ('liste','de','quatre','éléménts');
-	print lengthof(l);
+	print lengthof l;
 }}
