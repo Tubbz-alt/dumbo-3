@@ -270,6 +270,7 @@ def p_forL(p):
 			del context.vars[identif]
 	p[0] = f
 
+
 def p_forV(p):
 	'''
 	stmt : FOR IDENTIFIER IN IDENTIFIER DO stmt_list ENDFOR
@@ -286,7 +287,42 @@ def p_forV(p):
 		else :
 			del context.vars[id1]
 	p[0] = f
-	
+
+def listSize(s):
+	size = 0
+	if isinstance(s, Node):
+		while s != None:
+			s = s.next
+			size += 1
+	else :
+		raise TypeError
+	return size
+
+def p_lengthofL(p):
+	'''
+	expr : LENGTHOF LPAREN str_list RPAREN
+	'''
+	slist = p[3]
+	def f(context):
+		return listSize(slist)
+	p[0] = f
+
+def p_lengthofLID(p):
+	'''
+	expr : LENGTHOF LPAREN IDENTIFIER RPAREN
+	'''
+	identif = p[3]
+	def f(context):
+		s = context.vars.get(identif)
+		return listSize(s)
+	p[0] = f
+
+
+def p_lengthofS(p):
+	'''
+	expr : LENGTHOF LPAREN STRING RPAREN
+	'''
+	pass
 
 def p_it(p):
 	'''
