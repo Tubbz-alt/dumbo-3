@@ -107,7 +107,7 @@ def p_printE(p):
 	arg = p[2]
 	def f(context):
 		a = arg(context)
-		if isinstance(a, Node):
+		if a==None or isinstance(a, Node):
 			print_list(context, a)
 		else:
 			context.out.write(str(a))
