@@ -288,15 +288,6 @@ def p_forV(p):
 			del context.vars[id1]
 	p[0] = f
 
-def listSize(s):
-	size = 0
-	if isinstance(s, Node):
-		while s != None:
-			s = s.next
-			size += 1
-	else :
-		raise TypeError
-	return size
 
 def p_lengthofL(p):
 	'''
@@ -304,17 +295,34 @@ def p_lengthofL(p):
 	'''
 	slist = p[3]
 	def f(context):
-		return listSize(slist)
+		size = 0
+		s = slist
+		if isinstance(s, Node):
+			while s != None:
+				s = s.next
+				size += 1
+			return size
+		else :
+			raise TypeError
 	p[0] = f
 
-def p_lengthofLID(p):
+def p_lengthofID(p):
 	'''
 	expr : LENGTHOF LPAREN IDENTIFIER RPAREN
 	'''
 	identif = p[3]
 	def f(context):
 		s = context.vars.get(identif)
-		return listSize(s)
+		if isinstance(s, Node):
+			size = 0
+			while s != None:
+				s = s.next
+				size += 1
+			return size
+		elif isinstance(s, str):
+			return len(s)
+		else :
+			raise TypeError
 	p[0] = f
 
 

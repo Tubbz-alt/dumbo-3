@@ -161,8 +161,13 @@ interprétée récursivement.
 
 
 \subsection{for}
-TODO
+Comme déjà explicité précédemment, cette règle, comme beaucoup d'autres, retourne une fonction qui sera exécutée en temps voulu. La principale caractéristique du \texttt{for} réside dans le parcours de la liste de \texttt{STRINGS} qui lui est spécifiée, soit directement, soit par l'intermédiaire d'un identificateur. On peut donc alors avoir deux formes de boucle \texttt{for} : \texttt{FOR IDENTIFIER IN str\_list DO stmt\_list} et \texttt{FOR IDENTIFIER IN IDENTIFIER DO stmt\_list}.
 
+Pour les deux formes de \texttt{for}, un parcours de la liste donnée et stockée sous la forme de liste chaînée a été effectué. Une attention particulière a également été mise sur la portée des variables utilisées, tout particulièrement le premier \texttt{IDENTIFIER} qui se doit de retrouver sa valeur initiale (avant l'entrée dans la boucle) dès qu'il sort du bloc de la boucle. 
+
+\subsection{lengthof}
+%TODO Je ne sais pas trop comment le définir, opérateur, fonction ? 
+Nous avons décidé d'ajouter le mot-clé \texttt{lengthof} afin de faciliter le parcours des listes en permettant de connaître leur taille. Celui-ci utilisé de la manière suivante permet en effet de connaître la taille d'une liste : \texttt{LENGTHOF(str\_list)} ou\texttt{LENGTHOF(IDENTIFIER)} si ce dernier référence une liste. Ceci est très pratique dans de mutliples cas de figure. Mais ce n'est pas tout, il peut également être utilisé sur des littéraux de la façon suivante : \texttt{LENGTHOF(STRING)} ou\texttt{LENGTHOF(IDENTIFIER)} si ce dernier référence une chaîne de caractères.
 
 \section{Problèmes rencontrés}
 L'objet fourni par PLY en paramètre de chaque fonction
