@@ -1,0 +1,4 @@
+{{ print (); l := (); print l; }}
+{{ print ('a',); l := ('a',); print l; }}
+{{ print ('a', 'b'); l := ('a', 'b'); print l; }}
+{{ print ('a', 'b', 'c'); l := ('a', 'b', 'c'); print l; }}
