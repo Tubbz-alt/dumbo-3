@@ -322,7 +322,10 @@ def p_lengthofS(p):
 	'''
 	expr : LENGTHOF LPAREN STRING RPAREN
 	'''
-	pass
+	s = p[3]
+	def f(context):
+		return len(s)
+	p[0] = f
 
 def p_it(p):
 	'''
