@@ -226,11 +226,16 @@ Nous avons montré qu'il était relativement simple de créer un interpréteur
 pour moteur de templates. Avec quelques fonctions, le parcours d'arbre
 est implicite et ne nécessite pas la création d'une myriade d'objets.
 
-En outre, tous les exemples de l'énoncé fonctionnent sans problème :
+En outre, tous les exemples de l'énoncé fonctionnent sans problème
+(à lancer depuis le dossier \texttt{samples} dans \texttt{bash}) :
 \begin{verbatim}
-TODO
+$ alias di=../dumbo_interpreter.py
+$ di cours_{d1,t}.dumbo cours1.html
+$ di cours_{d2,t}.dumbo cours2.html
+$ di cours_{d2,t2}.dumbo cours3.html
+$ di label_{d,t}.dumbo label.html
+$ di photo_{d,t}.dumbo photo.html
 \end{verbatim}
 
 
-%\bibliography{comp}
 \end{document}
