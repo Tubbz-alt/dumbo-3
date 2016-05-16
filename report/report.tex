@@ -205,9 +205,31 @@ directement une fonction qui peut être appelée pour exécuter le script
 empêchant ainsi ce type de vérification.
 Python les contrôle aussi à l'exécution.
 
+Les conflits dans l'automate sont précisément expliqués par PLY.
+Cet outil nous permet ainsi de les lever plus facilement et de vérifier
+nos réponses à quelques exercices du cours.
+En voici un exemple : nous avions commencé par séparer l'association
+d'un opérateur avec un fonction depuis une règle différente. Le problème
+est que celle-ci cache le lexème utilisé et empêche l'attribution d'une
+priorité à ces opérateurs : \texttt{PLUS} et \texttt{TIMES} sont directement
+réduits en \texttt{OP} dont la priorité par rapport à un autre est inconnue.
+
+Les différents bugs remarqués lors du développement de l'interpréteur
+nous ont rappelé à quel point des tests automatisés (concernant au moins
+les possibles régressions) étaient importants dans ce genre
+de projets. Le script \texttt{tests.py} permet de lancer les tests
+passés en paramètre.
+
 
 \section{Conclusion}
+Nous avons montré qu'il était relativement simple de créer un interpréteur
+pour moteur de templates. Avec quelques fonctions, le parcours d'arbre
+est implicite et ne nécessite pas la création d'une myriade d'objets.
+
+En outre, tous les exemples de l'énoncé fonctionnent sans problème :
+\begin{verbatim}
 TODO
+\end{verbatim}
 
 
 %\bibliography{comp}
