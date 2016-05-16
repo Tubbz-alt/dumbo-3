@@ -298,18 +298,19 @@ def p_lengthof(p):
 	slist = p[2]
 	def f(context):
 		size = 0
-		s = slist
+		if hasattr(slist, '__call__'):
+			s = slist(context)
+		else:
+			s = slist
 		if s==None or isinstance(s, Node):
 			while s != None:
 				s = s.next
 				size += 1
 			return size
+		elif isinstance(s, str):
+			return len(s)
 		else:
-			s = slist(context)
-			if isinstance(s, str):
-				return len(s)
-			else:
-				raise TypeError
+			raise TypeError
 	p[0] = f
 
 def p_it(p):
