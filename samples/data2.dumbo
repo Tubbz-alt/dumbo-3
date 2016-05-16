@@ -1,5 +1,5 @@
 {{
-nom := 'Pijke';
-prenom := 'Fabian';
-cours := ('Intelligence artificielle', 'Projet info', 'Simulation');
+nom := 'Devillez';
+prenom := 'Gauvain';
+cours := ('Algo1', 'Algo2', 'Projet info', 'SDD1', 'SDD2');
 }}

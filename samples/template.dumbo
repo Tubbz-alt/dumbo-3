@@ -1,9 +1,9 @@
 <html>
 	<head><title>{{ print nom.' '.prenom; }}</title></head>
 	<body>
-	<h1> {{ print nom.' '.prenom; }}</h1>
-	Cours : {{ 	for c in cours do
+	<h1>{{ print nom.' '.prenom; }}</h1>
+	Cours :	{{	for c in cours do
 					print c.', ';
-				endfor; }}
-	</body>>
+				endfor;	}}
+	</body>
 </html>
