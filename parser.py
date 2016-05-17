@@ -17,7 +17,7 @@ precedence = (
 )
 
 class Node(object):
-	"""Linked list class for string lists"""
+	"Linked list class for string lists"
 	def __init__(self, data, next):
 		self.data = data
 		self.next = next
