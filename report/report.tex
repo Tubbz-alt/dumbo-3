@@ -12,6 +12,9 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{cancel}
+\usepackage{eso-pic}
+\usepackage{picture}
+\usepackage{graphicx}
 \newcommand{\bigO}{\mathcal{O}}
 \newcommand{\esN}{\mathbb{N}}
 \newcommand{\esR}{\mathbb{R}}
@@ -19,8 +22,11 @@
 \newcommand{\es}{\emptyset}
 \newcommand{\inc}{\subseteq}
 \newcommand{\sm}{\setminus}
-\usepackage{pgf,tikz}
-\usetikzlibrary{arrows}
+%taken from http://tex.stackexchange.com/a/278669
+\newcommand\BackgroundPic{
+	\put(\paperwidth-\columnwidth-1cm,-12cm){
+	\parbox[b]{\paperwidth}{\includegraphics[width=0.93\textwidth]{stmt.pdf}}}}
+
 \usepackage[french,onelanguage]{algorithm2e}
 \title{Devoir de Compilation -- Dumbo, un moteur de templates}
 \author{Jérémy \textsc{Gheysen}, Guillaume \textsc{Huysmans}}
@@ -249,6 +255,16 @@ $ di cours_{d2,t2}.dumbo cours3.html
 $ di label_{d,t}.dumbo label.html
 $ di photo_{d,t}.dumbo photo.html
 \end{verbatim}
+
+
+\begin{minipage}{0.55\columnwidth}
+\section*{Bonus}
+Voici en trame de fond une partie d'un graphe généré automatiquement
+à partir de la grammaire du langage de ce projet
+par un outil également développé en Python et disponible à cette adresse :
+\url{https://github.com/ghuysmans/autogramm}.
+\end{minipage}
+\AddToShipoutPicture*{\BackgroundPic}
 
 
 \end{document}
